@@ -28,7 +28,6 @@ def test(args):
     images_folder = Path("images")
 
     job_queue = queue.Queue()
-    NUM_WORKERS = 8
 
     print("Listing images...")
     all_thumbnails = list(images_folder.glob("*.jpg"))
@@ -55,13 +54,13 @@ def test(args):
 
     print("Starting workers...")
     worker_threads = []
-    for i in range(NUM_WORKERS):
+    for i in range(args.workers):
         t = threading.Thread(target=worker, args=(i,))
         worker_threads.append(t)
         t.start()
 
     def scheduler():
-        batch_size = 600
+        batch_size = args.batch_size
         batch = []
         print(f"Scheduling {len(all_thumbnails)} images...")
         for index, thumbnail_path in enumerate(all_thumbnails):
@@ -71,7 +70,7 @@ def test(args):
             batch.append(thumbnail_path)
         if len(batch) > 0:
             job_queue.put(batch)
-        for _ in range(NUM_WORKERS):
+        for _ in range(args.workers):
             job_queue.put(None)
 
     print("Starting scheduler...")
