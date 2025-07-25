@@ -1,0 +1,4 @@
+fastembed-gpu
+pillow
+numpy
+tqdm
