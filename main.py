@@ -47,7 +47,7 @@ def test(args):
             for index, embedding in enumerate(embeddings):
                 image_path = image_paths[index]
                 embedding_path = image_path.with_suffix(".npy")
-                np.save(embedding_path, embedding)
+                # np.save(embedding_path, embedding)
         while True:
             batch = job_queue.get()
             if batch is None:
