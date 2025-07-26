@@ -42,6 +42,8 @@ def test(args):
         all_thumbnails = all_thumbnails[:args.limit]
     pbar = tqdm(total=len(all_thumbnails))
 
+    worker_times = {}
+
     def worker(worker_id):
         print(f"[Worker {worker_id}] Starting...")
         image_embedder = ImageEmbedding(model_name, cuda=True, device="cuda")
@@ -57,10 +59,9 @@ def test(args):
                 pbar.write(f"[Worker {worker_id}] no more jobs, exiting")
                 break
             start_time = time.time()
-
             compute_embeddings(batch)
-
             end_time = time.time()
+            worker_times[worker_id] += end_time - start_time
             # pbar.write(f"[Worker {worker_id}] computed embeddings for {len(batch)} images in {end_time - start_time:.2f} seconds; fps: {len(batch) / (end_time - start_time):.2f}")
             job_queue.task_done()
             pbar.update(len(batch))
@@ -91,6 +92,7 @@ def test(args):
     worker_threads = []
     start_time = time.time()
     for i in range(args.workers):
+        worker_times[i] = 0
         t = threading.Thread(target=worker, args=(i,))
         worker_threads.append(t)
         t.start()
@@ -102,11 +104,12 @@ def test(args):
     pbar.close()
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
-    print("FPS", len(all_thumbnails) / (end_time - start_time))
+
+    max_worker_time = (min(worker_times.values()) + max(worker_times.values())) / 2
+    print("FPS", len(all_thumbnails) / max_worker_time)
 
     scheduler_thread.join()
     print("Done!")
-
 
 
 if __name__ == "__main__":
