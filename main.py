@@ -48,11 +48,13 @@ def test(args):
                 np.save(embedding_path, embedding)
         while True:
             batch = job_queue.get()
-            pbar.write(f"[Worker {worker_id}] got batch of {len(batch)} images")
             if batch is None:
                 pbar.write(f"[Worker {worker_id}] no more jobs, exiting")
                 break
+            start_time = time.time()
             compute_embeddings(batch)
+            end_time = time.time()
+            pbar.write(f"[Worker {worker_id}] computed embeddings for {len(batch)} images in {end_time - start_time} seconds; fps: {len(batch) / (end_time - start_time)}")
             job_queue.task_done()
             pbar.update(len(batch))
 
