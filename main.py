@@ -9,6 +9,7 @@ import queue
 import threading
 from fastembed.image.image_embedding import ImageEmbedding
 import onnxruntime as ort
+
 ort.set_default_logger_severity(3)
 
 def generate_images(args):
@@ -91,6 +92,7 @@ def test(args):
     start_time = time.time()
     for t in worker_threads:
         t.join()
+    pbar.close()
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
     print("FPS", len(all_thumbnails) / (end_time - start_time))
