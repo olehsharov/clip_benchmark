@@ -41,7 +41,6 @@ def test(args):
 
     def worker(worker_id):
         print(f"[Worker {worker_id}] Starting...")
-        workers_active += 1
         image_embedder = ImageEmbedding(model_name, cuda=True, device="cuda")
         def compute_embeddings(image_paths: list[Path]):
             embeddings = image_embedder.embed(image_paths)
@@ -60,8 +59,6 @@ def test(args):
             pbar.write(f"[Worker {worker_id}] computed embeddings for {len(batch)} images in {end_time - start_time:.2f} seconds; fps: {len(batch) / (end_time - start_time):.2f}")
             job_queue.task_done()
             pbar.update(len(batch))
-        workers_active -= 1
-        print(f"[Workers active: {workers_active}]")
 
     print("Starting workers...")
     worker_threads = []
