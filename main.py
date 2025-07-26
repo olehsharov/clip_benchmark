@@ -57,7 +57,7 @@ def test(args):
             compute_embeddings(batch)
 
             end_time = time.time()
-            pbar.write(f"[Worker {worker_id}] computed embeddings for {len(batch)} images in {end_time - start_time:.2f} seconds; fps: {len(batch) / (end_time - start_time):.2f}")
+            # pbar.write(f"[Worker {worker_id}] computed embeddings for {len(batch)} images in {end_time - start_time:.2f} seconds; fps: {len(batch) / (end_time - start_time):.2f}")
             job_queue.task_done()
             pbar.update(len(batch))
 
@@ -74,7 +74,7 @@ def test(args):
         pbar.write(f"Scheduling {len(all_thumbnails)} images...")
         for index, thumbnail_path in enumerate(all_thumbnails):
             if len(batch) >= batch_size:
-                pbar.write(f"Scheduling batch of {len(batch)} images...")
+                # pbar.write(f"Scheduling batch of {len(batch)} images...")
                 job_queue.put(batch)
                 batch = []
             batch.append(thumbnail_path)
