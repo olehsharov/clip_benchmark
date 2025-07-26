@@ -71,10 +71,10 @@ def test(args):
     def scheduler():
         batch_size = args.batch_size
         batch = []
-        print(f"Scheduling {len(all_thumbnails)} images...")
+        pbar.write(f"Scheduling {len(all_thumbnails)} images...")
         for index, thumbnail_path in enumerate(all_thumbnails):
             if len(batch) >= batch_size:
-                print(f"Scheduling batch of {len(batch)} images...")
+                pbar.write(f"Scheduling batch of {len(batch)} images...")
                 job_queue.put(batch)
                 batch = []
             batch.append(thumbnail_path)
