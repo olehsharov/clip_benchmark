@@ -86,7 +86,6 @@ def test(args):
     print("Starting scheduler...")
     scheduler_thread = threading.Thread(target=scheduler)
     scheduler_thread.start()
-    scheduler_thread.join()
 
     print("Waiting for workers to finish...")
     start_time = time.time()
@@ -96,7 +95,9 @@ def test(args):
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
     print("FPS", len(all_thumbnails) / (end_time - start_time))
+    scheduler_thread.join()
     print("Done!")
+
 
 
 if __name__ == "__main__":
