@@ -105,7 +105,7 @@ def test(args):
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
 
-    max_worker_time = (min(worker_times.values()) + max(worker_times.values())) / 2
+    max_worker_time = max(worker_times.values()) / 2
     print("FPS", len(all_thumbnails) / max_worker_time)
 
     scheduler_thread.join()
