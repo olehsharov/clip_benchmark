@@ -54,7 +54,7 @@ def test(args):
             start_time = time.time()
             compute_embeddings(batch)
             end_time = time.time()
-            pbar.write(f"[Worker {worker_id}] computed embeddings for {len(batch)} images in {end_time - start_time} seconds; fps: {len(batch) / (end_time - start_time)}")
+            pbar.write(f"[Worker {worker_id}] computed embeddings for {len(batch)} images in {end_time - start_time} seconds; fps: {int(len(batch) / (end_time - start_time))}")
             job_queue.task_done()
             pbar.update(len(batch))
 
