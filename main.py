@@ -63,6 +63,7 @@ def test(args):
 
     print("Starting workers...")
     worker_threads = []
+    start_time = time.time()
     for i in range(args.workers):
         t = threading.Thread(target=worker, args=(i,))
         worker_threads.append(t)
@@ -88,7 +89,6 @@ def test(args):
     scheduler_thread.start()
 
     print("Waiting for workers to finish...")
-    start_time = time.time()
     for t in worker_threads:
         t.join()
     pbar.close()
