@@ -1,3 +1,4 @@
+from io import BytesIO
 from pathlib import Path
 import time
 from fastembed.image import ImageEmbedding
@@ -42,10 +43,10 @@ def test(args):
     def worker(worker_id):
         print(f"[Worker {worker_id}] Starting...")
         image_embedder = ImageEmbedding(model_name, cuda=True, device="cuda")
-        def compute_embeddings(image_paths: list[Path]):
-            embeddings = image_embedder.embed(image_paths)
+        def compute_embeddings(images: list[tuple[Path, Image.Image]]):
+            embeddings = image_embedder.embed([image for _, image in images])
             for index, embedding in enumerate(embeddings):
-                image_path = image_paths[index]
+                image_path, _ = images[index]
                 embedding_path = image_path.with_suffix(".npy")
                 np.save(embedding_path, embedding)
         while True:
@@ -71,7 +72,10 @@ def test(args):
                 # pbar.write(f"Scheduling batch of {len(batch)} images...")
                 job_queue.put(batch)
                 batch = []
-            batch.append(thumbnail_path)
+            with open(thumbnail_path, "rb") as f:
+                r = f.read()
+                img = Image.open(BytesIO(r))
+            batch.append((thumbnail_path, img))
         if len(batch) > 0:
             job_queue.put(batch)
         for _ in range(args.workers):
