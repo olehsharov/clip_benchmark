@@ -61,14 +61,6 @@ def test(args):
             job_queue.task_done()
             pbar.update(len(batch))
 
-    print("Starting workers...")
-    worker_threads = []
-    start_time = time.time()
-    for i in range(args.workers):
-        t = threading.Thread(target=worker, args=(i,))
-        worker_threads.append(t)
-        t.start()
-
     def scheduler():
         batch_size = args.batch_size
         batch = []
@@ -88,9 +80,18 @@ def test(args):
     scheduler_thread = threading.Thread(target=scheduler)
     scheduler_thread.start()
 
+    print("Starting workers...")
+    worker_threads = []
+    start_time = time.time()
+    for i in range(args.workers):
+        t = threading.Thread(target=worker, args=(i,))
+        worker_threads.append(t)
+        t.start()
+
     print("Waiting for workers to finish...")
     for t in worker_threads:
         t.join()
+
     pbar.close()
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
