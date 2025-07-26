@@ -32,7 +32,8 @@ def test(args):
     print("Warming up image embedder...")
     ImageEmbedding(model_name, cuda=True, device="cuda")
 
-    job_queue = queue.Queue(maxsize=args.workers * args.batch_size * 10)
+    # job_queue = queue.Queue(maxsize=args.workers * args.batch_size * 10)
+    job_queue = queue.Queue()
 
     print("Listing images...")
     all_thumbnails = list(images_folder.glob("*.jpg"))
@@ -96,6 +97,7 @@ def test(args):
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
     print("FPS", len(all_thumbnails) / (end_time - start_time))
+
     scheduler_thread.join()
     print("Done!")
 
