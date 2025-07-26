@@ -38,6 +38,8 @@ def test(args):
 
     print("Listing images...")
     all_thumbnails = list(images_folder.glob("*.jpg"))
+    if args.limit is not None:
+        all_thumbnails = all_thumbnails[:args.limit]
     pbar = tqdm(total=len(all_thumbnails))
 
     def worker(worker_id):
@@ -118,6 +120,7 @@ if __name__ == "__main__":
     bench_parser = command.add_parser("test")
     bench_parser.add_argument("--workers", type=int, default=8, help="Number of workers to use per GPU")
     bench_parser.add_argument("--batch_size", type=int, default=420, help="Number of images to process per batch")
+    bench_parser.add_argument("--limit", type=int, default=None, help="Number of images to process")
     bench_parser.set_defaults(func=test)
 
     args = parser.parse_args()
