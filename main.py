@@ -31,14 +31,17 @@ def test(args):
     print("Warming up image embedder...")
     ImageEmbedding(model_name, cuda=True, device="cuda")
 
-    job_queue = queue.Queue()
+    job_queue = queue.Queue(maxsize=args.workers * args.batch_size * 2)
 
     print("Listing images...")
     all_thumbnails = list(images_folder.glob("*.jpg"))
     pbar = tqdm(total=len(all_thumbnails))
 
+    workers_active = 0
+
     def worker(worker_id):
         print(f"[Worker {worker_id}] Starting...")
+        workers_active += 1
         image_embedder = ImageEmbedding(model_name, cuda=True, device="cuda")
         def compute_embeddings(image_paths: list[Path]):
             embeddings = image_embedder.embed(image_paths)
@@ -54,10 +57,11 @@ def test(args):
             start_time = time.time()
             compute_embeddings(batch)
             end_time = time.time()
-            pbar.write(f"[Worker {worker_id}] computed embeddings for {len(batch)} images in {end_time - start_time} seconds; fps: {int(len(batch) / (end_time - start_time))}")
+            pbar.write(f"[Worker {worker_id}] computed embeddings for {len(batch)} images in {end_time - start_time:.2f} seconds; fps: {len(batch) / (end_time - start_time):.2f}")
             job_queue.task_done()
             pbar.update(len(batch))
-
+        workers_active -= 1
+        print(f"[Workers active: {workers_active}]")
 
     print("Starting workers...")
     worker_threads = []
@@ -85,6 +89,11 @@ def test(args):
     scheduler_thread = threading.Thread(target=scheduler)
     scheduler_thread.start()
     scheduler_thread.join()
+
+    # wait for queue to be full
+    print("Waiting for queue to be fill up...")
+    while job_queue.qsize() < args.workers * args.batch_size:
+        time.sleep(0.1)
 
     print("Waiting for workers to finish...")
     start_time = time.time()
