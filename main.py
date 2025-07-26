@@ -31,7 +31,7 @@ def test(args):
     print("Warming up image embedder...")
     ImageEmbedding(model_name, cuda=True, device="cuda")
 
-    job_queue = queue.Queue(maxsize=args.workers * args.batch_size * 2)
+    job_queue = queue.Queue(maxsize=args.workers * args.batch_size * 10)
 
     print("Listing images...")
     all_thumbnails = list(images_folder.glob("*.jpg"))
