@@ -1,9 +1,14 @@
 ### Prerequisites
 Ubuntu 20.04 / 22.04, CUDA 12, cudNN
 
-### All in one script
+### Install
 ```bash
-./run.sh # creates venv, install deps, generate test data, run tests
+./install.sh # creates venv, install deps
+```
+
+### Test
+```bash
+./test.sh # generate test images, run benchmarks
 ```
 
 If for some reason it does not work do this
