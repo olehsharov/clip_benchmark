@@ -24,11 +24,12 @@ def generate_images(args):
         img.save(image_path, format='JPEG', quality=100)
 
 def test(args):
-    print("Warming up image embedder...")
-    ImageEmbedding(model_name, cuda=True, device="cuda")
 
     model_name = "Qdrant/clip-ViT-B-32-vision"
     images_folder = Path("images")
+
+    print("Warming up image embedder...")
+    ImageEmbedding(model_name, cuda=True, device="cuda")
 
     job_queue = queue.Queue()
 
