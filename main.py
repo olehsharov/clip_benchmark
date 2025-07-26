@@ -48,8 +48,9 @@ def test(args):
                 np.save(embedding_path, embedding)
         while True:
             batch = job_queue.get()
+            pbar.write(f"[Worker {worker_id}] got batch of {len(batch)} images")
             if batch is None:
-                print(f"[Worker {worker_id}] no more jobs, exiting")
+                pbar.write(f"[Worker {worker_id}] no more jobs, exiting")
                 break
             compute_embeddings(batch)
             job_queue.task_done()
@@ -69,6 +70,7 @@ def test(args):
         print(f"Scheduling {len(all_thumbnails)} images...")
         for index, thumbnail_path in enumerate(all_thumbnails):
             if len(batch) >= batch_size:
+                print(f"Scheduling batch of {len(batch)} images...")
                 job_queue.put(batch)
                 batch = []
             batch.append(thumbnail_path)
