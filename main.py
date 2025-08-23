@@ -31,7 +31,8 @@ def test(args):
     images_folder = Path("images")
 
     print("Warming up image embedder...")
-    ImageEmbedding(model_name, cuda=True, device="cuda")
+    # ImageEmbedding(model_name, cuda=True, device="cuda")
+    ImageEmbedding(model_name)
 
     # job_queue = queue.Queue(maxsize=args.workers * args.batch_size * 10)
     job_queue = queue.Queue()
@@ -46,7 +47,8 @@ def test(args):
 
     def worker(worker_id):
         print(f"[Worker {worker_id}] Starting...")
-        image_embedder = ImageEmbedding(model_name, cuda=True, device="cuda")
+        # image_embedder = ImageEmbedding(model_name, cuda=True, device="cuda")
+        image_embedder = ImageEmbedding(model_name)
         def compute_embeddings(images: list[tuple[Path, Image.Image]]):
             embeddings = image_embedder.embed([image for _, image in images])
             for index, embedding in enumerate(embeddings):
@@ -121,8 +123,8 @@ if __name__ == "__main__":
     gen_parser.set_defaults(func=generate_images)
 
     bench_parser = command.add_parser("test")
-    bench_parser.add_argument("--workers", type=int, default=8, help="Number of workers to use per GPU")
-    bench_parser.add_argument("--batch_size", type=int, default=420, help="Number of images to process per batch")
+    bench_parser.add_argument("--workers", type=int, default=1, help="Number of workers to use per GPU")
+    bench_parser.add_argument("--batch_size", type=int, default=1, help="Number of images to process per batch")
     bench_parser.add_argument("--limit", type=int, default=None, help="Number of images to process")
     bench_parser.set_defaults(func=test)
 
